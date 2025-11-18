@@ -11,6 +11,7 @@
 #include "DataAsset/ModularAssetManager.h"
 #include "GameMode/ModularExperienceDefinition.h"
 #include "GameMode/ModularWorldSettings.h"
+#include "GameMode/ModularExperienceGameState.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/ModularExperiencePlayerState.h"
 #include "CommonUserSubsystem.h"
@@ -19,6 +20,7 @@
 
 AModularExperienceGameMode::AModularExperienceGameMode(const FObjectInitializer& ObjectInitializer)
 {
+	GameStateClass = AModularExperienceGameState::StaticClass();
 }
 
 const UModularPawnData* AModularExperienceGameMode::GetPawnDataForController(const AController* InController) const

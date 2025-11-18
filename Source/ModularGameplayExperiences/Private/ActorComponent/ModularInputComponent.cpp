@@ -342,9 +342,9 @@ void UModularInputComponent::InputActionMapping(UInputComponent* PlayerInputComp
 		InputConfigComponent->AddInputMappings(InputConfig, Subsystem);
 
 		InputConfigComponent->BindNativeAction(InputConfig, ModularGameplayTags::InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::Input_Move, /*bLogIfNotFound=*/ false);
+		InputConfigComponent->BindNativeAction(InputConfig, ModularGameplayTags::InputTag_Move, ETriggerEvent::Completed, this, &ThisClass::Input_Move, /*bLogIfNotFound=*/ false);
 		InputConfigComponent->BindNativeAction(InputConfig, ModularGameplayTags::InputTag_Look_Mouse, ETriggerEvent::Triggered, this, &ThisClass::Input_LookMouse, /*bLogIfNotFound=*/ false);
 		InputConfigComponent->BindNativeAction(InputConfig, ModularGameplayTags::InputTag_Look_Stick, ETriggerEvent::Triggered, this, &ThisClass::Input_LookStick, /*bLogIfNotFound=*/ false);
-		InputConfigComponent->BindNativeAction(InputConfig, ModularGameplayTags::InputTag_Crouch, ETriggerEvent::Triggered, this, &ThisClass::Input_Crouch, /*bLogIfNotFound=*/ false);
 	}
 }
 
@@ -355,19 +355,10 @@ void UModularInputComponent::Input_Move(const FInputActionValue& InputActionValu
 	if (const AController* Controller = Pawn ? Pawn->GetController() : nullptr)
 	{
 		const FVector2D Value = InputActionValue.Get<FVector2D>();
-		const FRotator MovementRotation(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
 
-		if (Value.X != 0.0f)
-		{
-			const FVector MovementDirection = MovementRotation.RotateVector(FVector::RightVector);
-			Pawn->AddMovementInput(MovementDirection, Value.X);
-		}
-
-		if (Value.Y != 0.0f)
-		{
-			const FVector MovementDirection = MovementRotation.RotateVector(FVector::ForwardVector);
-			Pawn->AddMovementInput(MovementDirection, Value.Y);
-		}
+		// Pass raw input directly to pawn
+		// Pawn should handle local/world direction input itself
+		Pawn->AddMovementInput(FVector(Value.X, Value.Y, 0.f));
 	}
 }
 
@@ -415,20 +406,5 @@ void UModularInputComponent::Input_LookStick(const FInputActionValue& InputActio
 	if (Value.Y != 0.0f)
 	{
 		Pawn->AddControllerPitchInput(Value.Y * ModularInputComponent::LookPitchRate * World->GetDeltaSeconds());
-	}
-}
-
-void UModularInputComponent::Input_Crouch(const FInputActionValue& InputActionValue)
-{
-	if (ACharacter* Character = GetPawn<ACharacter>())
-	{
-		if (Character->bIsCrouched)
-		{
-			Character->Crouch();
-		}
-		else
-		{
-			Character->UnCrouch();
-		}
 	}
 }
