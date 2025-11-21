@@ -5,6 +5,8 @@
 #include "GameFeatureAction.h"
 #if WITH_EDITOR
 	#include "Misc/DataValidation.h"
+	#include "Engine/AssetManager.h"
+	#include "GameFeatureData.h"
 #endif
 #include UE_INLINE_GENERATED_CPP_BY_NAME(ModularExperienceDefinition)
 
@@ -59,6 +61,19 @@ EDataValidationResult UModularExperienceDefinition::IsDataValid(FDataValidationC
 	}
 
 	return Result;
+}
+TArray<FString> UModularExperienceDefinition::GetGameFeatures() const
+{
+	TArray<FPrimaryAssetId> OutPrimaryAssetIdList;
+	UAssetManager::Get().GetPrimaryAssetIdList(UGameFeatureData::StaticClass()->GetFName(), OutPrimaryAssetIdList);
+
+	TArray<FString> GameFeatures;
+	for (const FPrimaryAssetId& AssetId : OutPrimaryAssetIdList)
+	{
+		GameFeatures.Add(AssetId.PrimaryAssetName.ToString());
+	}
+
+	return GameFeatures;
 }
 #endif
 

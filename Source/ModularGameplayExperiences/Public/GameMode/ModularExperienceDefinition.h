@@ -31,7 +31,7 @@ public:
 	TArray<TObjectPtr<UModularExperienceActionSet>> ActionSets;
 
 	// List of Game Feature Plugins this experience wants to have active.
-	UPROPERTY(EditDefaultsOnly, Category="Gameplay")
+	UPROPERTY(EditDefaultsOnly, Category="Gameplay", meta=(GetOptions="GetGameFeatures"))
 	TArray<FString> GameFeaturesToEnable;
 
 	/**
@@ -49,6 +49,9 @@ public:
 	 */
 #if WITH_EDITOR
 	virtual EDataValidationResult IsDataValid(class FDataValidationContext& Context) const override;
+private:
+	UFUNCTION()
+	TArray<FString> GetGameFeatures() const;
 #endif
 	/** @} */
 };
